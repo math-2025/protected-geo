@@ -1,0 +1,10 @@
+{
+  "placeholderImages": [
+    {
+      "id": "azerbaijan-map",
+      "description": "A satellite map of Azerbaijan.",
+      "imageUrl": "https://raw.githubusercontent.com/math-2025/photos/refs/heads/main/bunu.png",
+      "imageHint": "map azerbaijan"
+    }
+  ]
+}

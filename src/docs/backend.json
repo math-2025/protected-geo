@@ -1,0 +1,286 @@
+{
+  "entities": {
+    "MilitaryUnit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MilitaryUnit",
+      "type": "object",
+      "description": "Represents a military unit within the GeoShield system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the military unit."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the military unit."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current operational status of the unit (e.g., 'operational', 'offline', 'alert')."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The current latitude coordinate of the unit's location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The current longitude coordinate of the unit's location."
+        },
+        "mapId": {
+            "type": "string",
+            "description": "The ID of the map this unit belongs to."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status",
+        "latitude",
+        "longitude",
+        "mapId"
+      ]
+    },
+    "OperationTarget": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "OperationTarget",
+      "type": "object",
+      "description": "Represents an operation target assigned to a military unit.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the operation target."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the operation target."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The latitude coordinate of the operation target's location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The longitude coordinate of the operation target's location."
+        },
+        "assignedUnitId": {
+          "type": "string",
+          "description": "Reference to MilitaryUnit. The ID of the military unit assigned to this target. (Relationship: MilitaryUnit 1:N OperationTarget)"
+        },
+        "status": {
+            "type": "string",
+            "description": "The status of the operation target (e.g., 'pending', 'active', 'passive')."
+        },
+        "mapId": {
+            "type": "string",
+            "description": "The ID of the map this target belongs to."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "latitude",
+        "longitude",
+        "assignedUnitId",
+        "status",
+        "mapId"
+      ]
+    },
+    "Decoy": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Decoy",
+      "type": "object",
+      "description": "Represents a decoy coordinate displayed on the public feed.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the decoy."
+        },
+        "publicName": {
+          "type": "string",
+          "description": "The publicly visible name for the decoy, e.g., 'Bölük Alfa'."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The latitude coordinate of the decoy's location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The longitude coordinate of the decoy's location."
+        },
+        "operationTargetId": {
+          "type": "string",
+          "description": "Reference to OperationTarget. The ID of the operation target this decoy is associated with. (Relationship: OperationTarget 1:1 Decoy)"
+        }
+      },
+      "required": [
+        "id",
+        "publicName",
+        "latitude",
+        "longitude",
+        "operationTargetId"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user (commander or sub-commander) of the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user."
+        },
+        "password": {
+          "type": "string",
+          "description": "The user's password. Stored in plain text."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the user (e.g., 'commander', 'sub-commander')."
+        },
+        "assignedUnitId": {
+          "type": "string",
+          "description": "Reference to MilitaryUnit. The ID of the military unit this user is assigned to, if any. (Relationship: MilitaryUnit 1:N User)"
+        },
+        "canSeeAllUnits": {
+          "type": "boolean",
+          "description": "Indicates whether the user has permission to see all military units on the map. Only relevant for sub-commanders."
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "password",
+        "role"
+      ]
+    },
+    "Conversation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Conversation",
+      "type": "object",
+      "description": "Represents a conversation between two or more users.",
+      "properties": {
+        "id": { "type": "string" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": {
+          "type": "object",
+          "properties": {
+            "text": { "type": "string" },
+            "senderId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a single message within a conversation.",
+      "properties": {
+        "id": { "type": "string" },
+        "conversationId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "senderId", "text", "timestamp"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/military_units/{militaryUnitId}",
+        "definition": {
+          "entityName": "MilitaryUnit",
+          "schema": {
+            "$ref": "#/backend/entities/MilitaryUnit"
+          },
+          "description": "Represents military units.",
+          "params": [
+            {
+              "name": "militaryUnitId",
+              "description": "The unique identifier for the military unit."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/operation_targets/{operationTargetId}",
+        "definition": {
+          "entityName": "OperationTarget",
+          "schema": {
+            "$ref": "#/backend/entities/OperationTarget"
+          },
+          "description": "Represents operation targets assigned to military units.",
+          "params": [
+            {
+              "name": "operationTargetId",
+              "description": "The unique identifier for the operation target."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/decoys/{decoyId}",
+        "definition": {
+          "entityName": "Decoy",
+          "schema": {
+            "$ref": "#/backend/entities/Decoy"
+          },
+          "description": "Represents decoy coordinates displayed on the public feed.",
+          "params": [
+            {
+              "name": "decoyId",
+              "description": "The unique identifier for the decoy."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Represents a user of the system.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/conversations/{conversationId}",
+        "definition": {
+          "entityName": "Conversation",
+          "schema": { "$ref": "#/backend/entities/Conversation" },
+          "description": "Represents a conversation between users."
+        },
+        "subcollections": [
+          {
+            "path": "/messages/{messageId}",
+            "definition": {
+              "entityName": "Message",
+              "schema": { "$ref": "#/backend/entities/Message" },
+              "description": "Contains all messages for a given conversation."
+            }
+          }
+        ]
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support GeoShield's requirements for real-time unit tracking, secure communication, and decoy coordinate generation. The `conversations` and `messages` collections have been re-added to support the messaging feature."
+  }
+}
